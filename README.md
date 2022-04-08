@@ -1,0 +1,2 @@
+# Smart-Irrigation-System
+The smart irrigation system is the system developed to optimize water use for agricultural crops, to improve the health of the soil together with the plant health by the use of multiple sensors. The system has a distributed wireless network of soil moisture and PH sensors placed into root zone of the plant. This smart systems are very productive especially in developed counties and most system uses big networks such as Internet.
