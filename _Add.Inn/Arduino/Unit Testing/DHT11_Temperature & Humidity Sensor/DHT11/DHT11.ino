@@ -35,6 +35,18 @@ pinMode(buzzerPin, OUTPUT);
   lcd.begin(16, 2);
   lcd.println("Smart Irrigation System");
   //Lcd Ends
+  // GSM start
+    Serial.begin(9600);  //Baud rate of the GSM/GPRS Module 
+  delay(1000);                  
+  Serial.print("AT+CMGF=1\r");    
+  delay(1000);
+  Serial.print("AT+CMGS=\"+91xxxxxxxxxx\"\r");    //Phone number you want to send the sms
+  delay(1000);
+  Serial.print("Hello Maxphi\r");   //Text message you want to send
+  delay(1000);
+  Serial.write(0x1A); //sends ctrl+z end of message 
+  delay(1000); 
+//GSM Ends
 }
 void loop() {
   // wait a few seconds between measurements.
@@ -95,4 +107,6 @@ delay(1000);
   lcd.setCursor(0, 1);
   // print the number of seconds since reset:
   lcd.print(millis() / 1000);
+  //GSM Starts
+  
   }
