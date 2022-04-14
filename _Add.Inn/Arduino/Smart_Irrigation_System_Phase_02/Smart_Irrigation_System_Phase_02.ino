@@ -15,12 +15,12 @@ RTC_DS1307 RTC;
 DHT dht(DHTPIN, DHTTYPE);
 
 int ph_analog = A2;
-int ph_analog_val = 2.6; // for simulation purpose
+int ph_analog_val;
 int led = 13;
 LiquidCrystal lcd(12, 11, 6, 5, 4, 3);// Pins used for RS,E,D4,D5,D6,D7
 
 int moistPin = A0;
-int moistValue = 120; // for simulation purpose!
+int moistValue; 
 int limit = 300;
 
 const int buzzerPin = 2;
@@ -255,22 +255,18 @@ void loop() {
   lcd.print("T:");
   lcd.print("dht.temperature");
   lcd.setCursor(4, 1);
-  lcd.print("℃");
-  lcd.setCursor(5, 1);
-  lcd.print("|");
+  lcd.print((char)223);
+  lcd.print("C");
   lcd.setCursor(6, 1);
+  lcd.print("|");
+  lcd.setCursor(7, 1);
   lcd.print("M:");
   lcd.print("dht.moistValue");
-  lcd.setCursor(11, 1);
-  lcd.print("|");
   lcd.setCursor(12, 1);
+  lcd.print("|");
+  lcd.setCursor(13, 1);
   lcd.print("P:");
   lcd.print("dht.ph_analog_val");
-  lcd.setCursor(16, 1);
-  lcd.print("");
-  lcd.print((char)223);
-  lcd.setCursor(15, 1);
-  lcd.print("C");
   matchTIM();
 
   ph_analog_val = analogRead(ph_analog);
