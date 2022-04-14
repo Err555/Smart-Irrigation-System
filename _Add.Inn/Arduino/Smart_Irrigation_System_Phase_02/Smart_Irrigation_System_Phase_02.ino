@@ -15,12 +15,12 @@ RTC_DS1307 RTC;
 DHT dht(DHTPIN, DHTTYPE);
 
 int ph_analog = A2;
-int ph_analog_val;
+int ph_analog_val = 2.6; // for simulation purpose
 int led = 13;
 LiquidCrystal lcd(12, 11, 6, 5, 4, 3);// Pins used for RS,E,D4,D5,D6,D7
 
 int moistPin = A0;
-int moistValue;
+int moistValue = 120; // for simulation purpose!
 int limit = 300;
 
 const int buzzerPin = 2;
@@ -126,7 +126,7 @@ void loop() {
 
     Serial.print("Temperature: ");
     Serial.print(tempC);
-    Serial.println("°C ~ ");
+    Serial.println("C");
 
     Serial.print("PH Value - ");
     Serial.print(ph_analog_val);
@@ -241,10 +241,11 @@ void loop() {
   printDigits2(HOUR = now.hour());
   lcd.print(":");
   printDigits2(MINUT = now.minute());
-  lcd.print(":");
-  newTime = now.minute();
-  lcd.print("|");
   lcd.setCursor(6, 0);
+  newTime = now.minute();
+  lcd.setCursor(5, 0);
+  lcd.print("");
+  lcd.setCursor(7, 0);
   lcd.print(now.year(), DEC);
   lcd.print("-");
   lcd.print(now.month(), DEC);
