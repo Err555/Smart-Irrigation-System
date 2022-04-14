@@ -7,54 +7,17 @@
 #include <Keypad.h>
 #include <SoftwareSerial.h>
 
-#define DHTPIN A0
+#define DHTPIN 10
 #define DHTTYPE DHT11
 
 RTC_DS1307 RTC;
-
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
- const byte ROWS = 4; //for four rows // TO BE CHECKED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-const byte COLS = 3; //for three columns
-
-/*byte rowPins[ROWS] = {A8, A9, A10, A11}; //connect to the row pinouts of the keypad contains four pins
-
-byte colPins[COLS] = {A12, A13, A14}; //connect to the column pinouts of the keypad contains three pins
- */
-int value,pos=0,moist,newTime,prevTime,a=0,temp,hoursE=0,delayTIM;
-
-String msg = String(""); // String buffer for the GPRS shield message
-
-int SmsContentFlag = 0;//Set to 1 when the next GSM/GPRS modem contains a SMS message
-
-int relay=24;//Pin declare for relay control at pin number 24 of arduino mega
-/*
-char keys[ROWS][COLS] = {
-
-  {'1','2','3'},
-
-  {'4','5','6'},
-
-  {'7','8','9'},
-
-  {'*','0','#'}
-
-};
- 
-int lastMinute,i=0,count=0,num[10],phno[10],HOUR=0,MINUT=0,SECOND=0;//Variable to store phone number
-
-Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
-*/
-
-// ####################################################################################################################################
+LiquidCrystal lcd(12, 11, 6, 5, 4, 3);
 DHT dht(DHTPIN, DHTTYPE);
 
 int ph_analog = A1;
 int ph_analog_val;
 
-int moistPin = A2; 
+int moistPin = A0; 
 int moistValue;
 int limit = 300;
 
