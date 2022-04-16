@@ -43,7 +43,7 @@ char keys[ROWS][COLS] = {
   {'*', '0', '#'}
 };
 
-int lastMinute, i = 0, count = 0, num[10], phno[10], HOUR = 0, MINUT = 0, SECOND = 0; //Variable to store phone number
+int lastMinute, i = 0, count = 0, num[10], phno[10], HOUR = 0, MINUT = 0, MONTH = 1, SECOND = 0; //Variable to store phone number
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 // ###########################################################################################################
@@ -244,16 +244,17 @@ void loop() {
   lcd.print(":");
   printDigits2(MINUT = now.minute());
   newTime = now.minute();
-  lcd.setCursor(7, 0);
+  lcd.setCursor(5, 0);
   lcd.print("|");
-  lcd.setCursor(10, 0);
+  lcd.setCursor(6, 0);
   lcd.print(now.year(), DEC);
   lcd.print("-");
-  lcd.print(now.month(), DEC);
+  lcd.setCursor(11, 0);
+  printDigits2(MONTH = now.month());
   lcd.print("-");
   lcd.print(now.day(), DEC);
-  lcd.setCursor(0, 1);
-  /* lcd.print("Temperature:");  
+ /* lcd.setCursor(0, 1);
+  lcd.print("Temperature:");  
   lcd.print(analogRead(DHTPIN)); 
   lcd.setCursor(17, 1);
   lcd.print((char)223);
@@ -329,7 +330,6 @@ void printDigits2(int digits)  //this void function is really useful; it adds a 
 }
 // ##########################################################################
 void printDigits3(int digits)  //this void function is really useful; it adds a "0" to the beginning of the number, so that 5 minutes is displayed as "00:05:00", rather than "00:5 :00"
-
 {
   if (digits < 1000)
   {
