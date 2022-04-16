@@ -58,24 +58,25 @@ void setup() {
   delay(200);
   Wire.begin();
   RTC.begin();
-  lcd.begin(16, 2);
-  lcd.setCursor(0, 0);
+  lcd.begin(20, 4);
+  lcd.setCursor(2, 1);
   lcd.print("Smart Irrigation");
-  lcd.setCursor(0, 1);
+  lcd.setCursor(2, 2);
   lcd.print("MOISTURE DETECT... ");
-  delay(3000);
+  delay(1000);
   if (!RTC.isrunning())
   {
     RTC.adjust(DateTime(__DATE__, __TIME__));
   }
-  digitalWrite(13, LOW);
-  lcd.setCursor(0, 0);
-  lcd.print("ENTER MOBILE NO.");
-  lcd.setCursor(0, 1);
+  lcd.clear();
+  lcd.setCursor(2, 1);
+  lcd.println("ENTER MOBILE NO.");
+  lcd.setCursor(2, 2);
   lcd.println(" YES*       NO# ");
+
 DateTime now = RTC.now();
   prevTime = now.minute();
-//lcd.print("                ");
+lcd.print("                ");
 
   pinMode(ph_analog, INPUT);
   pinMode(13, OUTPUT);
@@ -85,14 +86,13 @@ DateTime now = RTC.now();
 void loop() {
 
   char key = keypad.getKey();
- 
                  while(pos==0){
                   char key = keypad.getKey();
                  if(key=='*' && pos==0){
-                  lcd.setCursor(0,0);
-                  lcd.print("ENTER MOBILE NO.");
-                lcd.setCursor(0,1);
-                lcd.print("                ");
+                  lcd.setCursor(2,1);
+                  lcd.println("ENTER MOBILE NO.");
+                lcd.setCursor(2,2);
+                lcd.println(" ");
                  saveNUM();
                }
                if(key=='#' && pos==0){
@@ -102,7 +102,6 @@ void loop() {
                 break; 
                }
                } 
-
   // read humidity
   float humi  = dht.readHumidity();
   // read temperature as Celsius
@@ -137,14 +136,14 @@ void loop() {
     Serial.println(moistValue);
     Serial.println();
 
-    if (moistValue < limit) {
+    if (moistValue > limit) {
       a = 0;
       while (1) {
         digitalWrite(13, HIGH);
           lowAlertSMS();
-        lcd.setCursor(0, 0);
+        lcd.setCursor(1, 1);
         lcd.print(" SOIL MOISTURE  ");
-        lcd.setCursor(0, 1);
+        lcd.setCursor(2, 1);
         lcd.print("  LOW DETECTED  ");
         delay(1000);
       }
@@ -156,7 +155,7 @@ void loop() {
           SerialInByte = (unsigned char)Serial1.read();
           delay(5);
           if ( SerialInByte == 13 ) {
-            //           ProcessGprsMsg();
+                       ProcessGprsMsg();
             Serial.println( "*** SMS Received ***" );
           }
           if ( SerialInByte == 10 ) {
@@ -200,7 +199,6 @@ void loop() {
     lcd.clear();
     timerSET();
   }
-
   if (key == '3') {
     lcd.clear();
     value = EEPROM.read(11);
@@ -210,7 +208,6 @@ void loop() {
     lcd.print("  EVERY   HOUR   ");
     lcd.setCursor(8, 1);
     lcd.print(value);
-    delay(3000);
     delay(3000);
   }
 
@@ -236,43 +233,38 @@ void loop() {
   lcd.setCursor(10, 1);
   lcd.print(" ");
   dht.read(DHTPIN);
+  
+  ph_analog_val = analogRead(ph_analog);
+  Serial.print("PH Value - ");
+  Serial.println(ph_analog_val);
+  
   DateTime now = RTC.now();
   lcd.setCursor(0, 0);
   printDigits2(HOUR = now.hour());
   lcd.print(":");
   printDigits2(MINUT = now.minute());
-  lcd.setCursor(6, 0);
   newTime = now.minute();
-  lcd.setCursor(5, 0);
-  lcd.print("");
   lcd.setCursor(7, 0);
+  lcd.print("|");
+  lcd.setCursor(10, 0);
   lcd.print(now.year(), DEC);
   lcd.print("-");
   lcd.print(now.month(), DEC);
   lcd.print("-");
   lcd.print(now.day(), DEC);
   lcd.setCursor(0, 1);
-  lcd.print("T:");
-  lcd.print("dht.temperature");
-  lcd.setCursor(4, 1);
+  lcd.print("Temperature:");
+  lcd.print(analogRead(DHTPIN)); 
+  lcd.setCursor(17, 1);
   lcd.print((char)223);
   lcd.print("C");
-  lcd.setCursor(6, 1);
-  lcd.print("|");
-  lcd.setCursor(7, 1);
-  lcd.print("M:");
-  lcd.print("dht.moistValue");
-  lcd.setCursor(12, 1);
-  lcd.print("|");
-  lcd.setCursor(13, 1);
-  lcd.print("P:");
-  lcd.print("dht.ph_analog_val");
+  lcd.setCursor(0, 2);
+  lcd.print("Moisture Amount:");
+  lcd.print(analogRead(moistPin));
+  lcd.setCursor(0, 3);
+  lcd.print("PH Value:");
+  lcd.print(analogRead(ph_analog));
   matchTIM();
-
-  ph_analog_val = analogRead(ph_analog);
-  Serial.print("PH Value - ");
-  Serial.println(ph_analog_val);
-
 }
 //#############################################################
 void saveNUM() {
