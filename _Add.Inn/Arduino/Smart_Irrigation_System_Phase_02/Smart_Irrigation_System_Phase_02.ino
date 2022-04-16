@@ -58,20 +58,20 @@ void setup() {
   delay(200);
   Wire.begin();
   RTC.begin();
-  lcd.begin(20, 4);
-  lcd.setCursor(2, 1);
+  lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
   lcd.print("Smart Irrigation");
-  lcd.setCursor(2, 2);
-  lcd.print("MOISTURE DETECT... ");
+  lcd.setCursor(0, 1);
+  lcd.print("MOISTURE DETECT.");
   delay(1000);
   if (!RTC.isrunning())
   {
     RTC.adjust(DateTime(__DATE__, __TIME__));
   }
   lcd.clear();
-  lcd.setCursor(2, 1);
+  lcd.setCursor(0, 0);
   lcd.println("ENTER MOBILE NO.");
-  lcd.setCursor(2, 2);
+  lcd.setCursor(0, 1);
   lcd.println(" YES*       NO# ");
 
 DateTime now = RTC.now();
@@ -89,10 +89,10 @@ void loop() {
                  while(pos==0){
                   char key = keypad.getKey();
                  if(key=='*' && pos==0){
-                  lcd.setCursor(2,1);
+                  lcd.setCursor(0,0);
                   lcd.println("ENTER MOBILE NO.");
-                lcd.setCursor(2,2);
-                lcd.println(" ");
+                lcd.setCursor(0,1);
+                lcd.println("                ");
                  saveNUM();
                }
                if(key=='#' && pos==0){
@@ -113,15 +113,15 @@ void loop() {
   // read moisture value of soil
   moistValue = analogRead(moistPin);
 
-  // check if any reads failed
+  // checking if any reads failed
   if (isnan(humi) || isnan(tempC) || isnan(tempF) || isnan(ph_analog_val) || isnan(moistValue)) {
     Serial.println("Failed to read from Sensors");
   } else {
-   // Serial.print("Humidity: ");
-    //Serial.print(humi);
-    //Serial.print("%");
+    Serial.print("Humidity: ");
+    Serial.print(humi);
+    Serial.print("%");
 
-    //Serial.print("  |  ");
+    Serial.print("  |  ");
 
     Serial.print("Temperature: ");
     Serial.print(tempC);
@@ -136,7 +136,7 @@ void loop() {
     Serial.println(moistValue);
     Serial.println();
 
-    if (moistValue > limit) {
+    if (moistValue < limit) {
       a = 0;
       while (1) {
         digitalWrite(13, HIGH);
@@ -253,17 +253,27 @@ void loop() {
   lcd.print("-");
   lcd.print(now.day(), DEC);
   lcd.setCursor(0, 1);
-  lcd.print("Temperature:");
+  /* lcd.print("Temperature:");  
   lcd.print(analogRead(DHTPIN)); 
   lcd.setCursor(17, 1);
   lcd.print((char)223);
-  lcd.print("C");
+  lcd.print("C"); */
   lcd.setCursor(0, 2);
-  lcd.print("Moisture Amount:");
-  lcd.print(analogRead(moistPin));
-  lcd.setCursor(0, 3);
-  lcd.print("PH Value:");
-  lcd.print(analogRead(ph_analog));
+  lcd.print("Moist:");
+   if (moistValue > 999)
+  {
+   lcd.print("999");
+   lcd.setCursor(9, 2);
+   lcd.print("PH:");
+   lcd.print(analogRead(ph_analog));
+  }
+  else 
+  {
+   lcd.print(analogRead(moistPin));
+   lcd.setCursor(9, 2);
+   lcd.print("PH:");
+   lcd.print(analogRead(ph_analog));
+  }
   matchTIM();
 }
 //#############################################################
