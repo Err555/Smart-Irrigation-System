@@ -180,7 +180,6 @@ void loop() {
     }
     delay(1000);
   }
-
   if (key == '1') {
     moistureDETECT();
   }
@@ -192,9 +191,8 @@ void loop() {
     lcd.print("ENTER MOBILE NO.");
     lcd.setCursor(0, 1);
     lcd.print("                ");
-    saveNUM();
+               saveNUM();
   }
-
   if (key == '#') {
     lcd.clear();
     timerSET();
@@ -210,7 +208,6 @@ void loop() {
     lcd.print(value);
     delay(3000);
   }
-
   if (key == '*') {
     lcd.clear();
     for (int i = 1; i < 41; i++) {
@@ -260,23 +257,23 @@ void loop() {
   lcd.print((char)223);
   lcd.print("C"); */
   lcd.setCursor(0, 2);
-  lcd.print("Moist:");
-   if (moistValue > 999)
-  {
-   lcd.print("999");
+  lcd.print("Moist Val:");
+   if (moistValue > 9999){
+   lcd.print("9999");
   }
-  else 
-  {
+  else {
    lcd.print(analogRead(moistPin));
   }
-  delay(2000);
-   lcd.setCursor(9, 2);
-   lcd.print("                ");
-   delay(1000);
-   lcd.print("PH:");
+  delay(1000);
+ lcd.setCursor(0, 2); 
+ lcd.print("                ");
+ delay(50);
+   lcd.setCursor(0, 2);
+   lcd.print("PH Value: ");
    lcd.print(analogRead(ph_analog));
-   delay(2000);
+   delay(1000);
   matchTIM();
+}
 //#############################################################
 void saveNUM() {
   while (1) {
@@ -300,16 +297,13 @@ void saveNUM() {
           EEPROM.write(j, num[j]);
           delay(500);
         }
-
         lcd.setCursor(0, 0);
         lcd.print("  NUMBER SAVED  ");
         lcd.setCursor(0, 1);
         lcd.print("***************");
         lcd.clear();
         pos = 1;
-
         break;
-
       }
     }
   }
