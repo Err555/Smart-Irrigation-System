@@ -264,19 +264,19 @@ void loop() {
    if (moistValue > 999)
   {
    lcd.print("999");
-   lcd.setCursor(9, 2);
-   lcd.print("PH:");
-   lcd.print(analogRead(ph_analog));
   }
   else 
   {
    lcd.print(analogRead(moistPin));
+  }
+  delay(2000);
    lcd.setCursor(9, 2);
+   lcd.print("                ");
+   delay(1000);
    lcd.print("PH:");
    lcd.print(analogRead(ph_analog));
-  }
+   delay(2000);
   matchTIM();
-}
 //#############################################################
 void saveNUM() {
   while (1) {
