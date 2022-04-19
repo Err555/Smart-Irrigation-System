@@ -258,20 +258,22 @@ void loop() {
   lcd.print("C"); */
   lcd.setCursor(0, 2);
   lcd.print("Moist Val:");
-   if (moistValue > 9999){
-   lcd.print("9999");
+   if (moistValue > 999){
+   lcd.print("999");
   }
   else {
    lcd.print(analogRead(moistPin));
   }
-  delay(1000);
+  delay(500);
  lcd.setCursor(0, 2); 
  lcd.print("                ");
- delay(50);
+ delay(1);
    lcd.setCursor(0, 2);
    lcd.print("PH Value: ");
    lcd.print(analogRead(ph_analog));
-   delay(1000);
+   lcd.setCursor(0, 2); 
+ lcd.print("                ");
+ delay(1);
   matchTIM();
 }
 //#############################################################
@@ -288,7 +290,7 @@ void saveNUM() {
       lcd.print(num[i]);
       count++;
       i++;
-      delay(500);
+      delay(10);
 
       if (key == '#' && count == 11) {
         for (int j = 0; j < 11; j++) {
