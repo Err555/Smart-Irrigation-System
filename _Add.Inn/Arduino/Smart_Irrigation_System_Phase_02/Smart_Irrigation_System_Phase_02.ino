@@ -269,6 +269,8 @@ void loop() {
    lcd.setCursor(0, 2);
    lcd.print("PH Value: ");
    lcd.print(analogRead(ph_analog));
+   delay(500);
+   lcd.setCursor(0, 2);
    lcd.print("                ");
   matchTIM();
 }
