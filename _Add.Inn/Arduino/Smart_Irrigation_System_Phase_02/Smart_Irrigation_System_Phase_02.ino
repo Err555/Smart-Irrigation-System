@@ -265,15 +265,11 @@ void loop() {
    lcd.print(analogRead(moistPin));
   }
   delay(500);
- lcd.setCursor(0, 2); 
- lcd.print("                ");
- delay(1);
+   lcd.print("                ");
    lcd.setCursor(0, 2);
    lcd.print("PH Value: ");
    lcd.print(analogRead(ph_analog));
-   lcd.setCursor(0, 2); 
- lcd.print("                ");
- delay(1);
+   lcd.print("                ");
   matchTIM();
 }
 //#############################################################
