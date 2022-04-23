@@ -51,10 +51,12 @@ void setup() {
 
   Serial1.begin(9600);   // Setting the baud rate of GSM Module
   Serial.begin(9600);    // Setting the baud rate of Serial Monitor (Arduino)
-
+  delay (1000);
   pinMode( relay, OUTPUT );
   digitalWrite( relay, LOW );
-  Serial.println( "AT+CMGF=1" );
+  Serial1.println( "AT+CMGF=1" );
+  Serial1.println("Preparing to send SMS");
+  SendMessage();
   delay(200);
   Wire.begin();
   RTC.begin();
@@ -264,15 +266,15 @@ void loop() {
   else {
    lcd.print(analogRead(moistPin));
   }
-  delay(500);
+  delay(1000);
    lcd.print("                ");
    lcd.setCursor(0, 2);
    lcd.print("PH Value: ");
    lcd.print(analogRead(ph_analog));
-   delay(500);
+   delay(1000);
    lcd.setCursor(0, 2);
    lcd.print("                ");
-   delay(10);
+   delay(1);
   matchTIM();
 }
 //#############################################################
@@ -536,5 +538,21 @@ void ProcessGprsMsg() {
   }
   msg = "";
   SmsContentFlag = 0;
+}
+
+void SendMessage()
+{
+   Serial1.println("Setting the GSM in text mode");
+   Serial1.println("AT+CMGF=1\r");
+   delay(2000);
+   Serial1.println("Sending SMS to the desired phone number!");
+   Serial1.println("AT+CMGS=\"+xxxxxxxxxxx\"\r");
+   // Replace x with mobile number
+   delay(2000);
+
+   Serial1.println("Hello from SIM900");    // SMS Text
+   delay(200);
+   Serial1.println((char)26);               // ASCII code of CTRL+Z
+   delay(2000);
 }
 // ###################################################################################################################################
