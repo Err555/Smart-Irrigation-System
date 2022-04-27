@@ -58,6 +58,7 @@ void setup() {
   Serial1.println("Preparing to send SMS");
   SendMessage();
   delay(200);
+  
   Wire.begin();
   RTC.begin();
   lcd.begin(16, 2);
@@ -274,7 +275,6 @@ void loop() {
    delay(1000);
    lcd.setCursor(0, 2);
    lcd.print("                ");
-   delay(1);
   matchTIM();
 }
 //#############################################################
