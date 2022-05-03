@@ -14,14 +14,18 @@ RTC_DS1307 RTC;
 
 DHT dht(DHTPIN, DHTTYPE);
 
+float calibration_value = 21.34;
 int ph_analog = A2;
-int ph_analog_val;
+float ph_analog_val;
 int led = 13;
+unsigned long int avgval;
+int buffer_arr[10], temp;
+
 LiquidCrystal lcd(12, 11, 6, 5, 4, 3);// Pins used for RS,E,D4,D5,D6,D7
 
 int moistPin = A0;
-int moistValue; 
-int limit = 300;
+float moistValue; 
+float limit = 60;
 
 const int buzzerPin = 2;
 
@@ -234,11 +238,7 @@ void loop() {
   lcd.print(" ");
   dht.read(DHTPIN);
   
-  ph_analog_val = analogRead(ph_analog);
-  Serial.print("PH Value - ");
-  Serial.println(ph_analog_val);
-  
-  DateTime now = RTC.now();
+  /*DateTime now = RTC.now();
   lcd.setCursor(0, 0);
   printDigits2(HOUR = now.hour());
   lcd.print(":");
@@ -252,29 +252,57 @@ void loop() {
   lcd.setCursor(11, 0);
   printDigits2(MONTH = now.month());
   lcd.print("-");
-  lcd.print(now.day(), DEC);
+  lcd.print(now.day(), DEC); */
+  
  /* lcd.setCursor(0, 1);
   lcd.print("Temperature:");  
   lcd.print(analogRead(DHTPIN)); 
   lcd.setCursor(17, 1);
   lcd.print((char)223);
   lcd.print("C"); */
-  lcd.setCursor(0, 2);
+  lcd.setCursor(0, 0);
+  moistValue = map(analogRead(moistPin), 550,0,0,100);
+  if (analogRead(moistPin)>550 | analogRead(moistPin)<0)
+  {
+     lcd.print("Moist Val:");
+    lcd.print(abs(moistValue)); 
+   lcd.println("%");
+  }
+  else
+  {
   lcd.print("Moist Val:");
-   if (moistValue > 999){
-   lcd.print("999");
+   lcd.print(moistValue);
+   lcd.println("%");
   }
-  else {
-   lcd.print(analogRead(moistPin));
+
+for(int i=0; i<10; i++)
+{
+  buffer_arr[i]=analogRead(A1);
+  delay(30);
+}
+for(int i=0; i<9; i++)
+{
+  for(int j=i+1; j<10; j++)
+  {
+    if(buffer_arr[i]>buffer_arr[j])
+    {
+      temp=buffer_arr[i];
+      buffer_arr[i]=buffer_arr[j];
+      buffer_arr[j]=temp;
+    }
   }
-  delay(1000);
-   lcd.print("                ");
-   lcd.setCursor(0, 2);
+}
+avgval=0;
+for(int i=2;i<8;i++)
+avgval+=buffer_arr[i];
+float volt=(float)avgval*5.0/1024/6;
+float ph_analog_val = -5.70 * volt + calibration_value;
+
+
+  
+  lcd.setCursor(0, 1);
    lcd.print("PH Value: ");
-   lcd.print(analogRead(ph_analog));
-   delay(1000);
-   lcd.setCursor(0, 2);
-   lcd.print("                ");
+   lcd.print(ph_analog_val);
   matchTIM();
 }
 //#############################################################
