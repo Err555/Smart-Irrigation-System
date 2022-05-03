@@ -14,7 +14,7 @@ RTC_DS1307 RTC;
 
 DHT dht(DHTPIN, DHTTYPE);
 
-float calibration_value = 21.21;
+float calibration_value = 21.47;
 int ph_analog = A2;
 float ph_analog_val;
 int led = 13;
