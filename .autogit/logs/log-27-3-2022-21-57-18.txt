@@ -1,0 +1,16 @@
+-------------------- Auto-Git Log --------------------
+		Wed Apr 27 2022 21:57:18 GMT+0300 (East Africa Time)
+------------------------------------------------------
+
+Modified files:
+* _Add.Inn/Arduino/Smart_Irrigation_System_Phase_02/Smart_Irrigation_System_Phase_02.ino
+* "_Add.Inn/Proteus/Last Loaded Smart_Irrigation_System_Phase_02.pdsbak"
+
+
+Created files:
+
+
+Deleted files:
+
+
+Renamed files:
