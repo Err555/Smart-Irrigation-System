@@ -14,7 +14,7 @@ RTC_DS1307 RTC;
 
 DHT dht(DHTPIN, DHTTYPE);
 
-float calibration_value = 21.34;
+float calibration_value = 21.21;
 int ph_analog = A2;
 float ph_analog_val;
 int led = 13;
@@ -297,12 +297,10 @@ for(int i=2;i<8;i++)
 avgval+=buffer_arr[i];
 float volt=(float)avgval*5.0/1024/6;
 float ph_analog_val = -5.70 * volt + calibration_value;
-
-
   
   lcd.setCursor(0, 1);
    lcd.print("PH Value: ");
-   lcd.print(ph_analog_val);
+   lcd.print(abs(ph_analog_val));
   matchTIM();
 }
 //#############################################################
