@@ -7,21 +7,31 @@
 #include <Keypad.h>
 #include <SoftwareSerial.h>
 
+
+SoftwareSerial Serial12(19, 18);
 #define DHTPIN 10
 #define DHTTYPE DHT11
+#define SIM900_RX_PIN 19
+#define SIM900_TX_PIN 18
 
+float humi;
+float tempC;
 RTC_DS1307 RTC;
 
 DHT dht(DHTPIN, DHTTYPE);
 
+float calibration_value = 21.47;
 int ph_analog = A2;
-int ph_analog_val;
+float ph_analog_val;
 int led = 13;
+unsigned long int avgval;
+int buffer_arr[10], temp;
+
 LiquidCrystal lcd(12, 11, 6, 5, 4, 3);// Pins used for RS,E,D4,D5,D6,D7
 
 int moistPin = A0;
-int moistValue; 
-int limit = 300;
+float moistValue; 
+float limit = 60;
 
 const int buzzerPin = 2;
 
@@ -49,13 +59,11 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 // ###########################################################################################################
 void setup() {
 
-  Serial1.begin(9600);   // Setting the baud rate of GSM Module
+  Serial12.begin(9600);   // Setting the baud rate of GSM Module
   Serial.begin(9600);    // Setting the baud rate of Serial Monitor (Arduino)
-
+  delay (1000);
   pinMode( relay, OUTPUT );
-  digitalWrite( relay, LOW );
-  Serial.println( "AT+CMGF=1" );
-  delay(200);
+  
   Wire.begin();
   RTC.begin();
   lcd.begin(16, 2);
@@ -73,7 +81,6 @@ void setup() {
   lcd.println("ENTER MOBILE NO.");
   lcd.setCursor(0, 1);
   lcd.println(" YES*       NO# ");
-
 DateTime now = RTC.now();
   prevTime = now.minute();
 lcd.print("                ");
@@ -85,6 +92,7 @@ lcd.print("                ");
 // ##################################################################################################################################
 void loop() {
 
+digitalWrite( relay, LOW );
   char key = keypad.getKey();
                  while(pos==0){
                   char key = keypad.getKey();
@@ -94,14 +102,30 @@ void loop() {
                 lcd.setCursor(0,1);
                 lcd.println("                ");
                  saveNUM();
+                 SendMessage();
                }
                if(key=='#' && pos==0){
-                 //sendSMS();
+                 SendMessage();
                 lcd.clear();
                 pos=2;
                 break; 
                }
-               } 
+               }
+               {
+  if (Serial.available()>0)
+   switch(Serial.read())
+  {
+    case 's':
+      SendMessage();
+      break;
+    //case 'd':
+    //  DialCall();
+      break;
+  }
+ if (Serial12.available()>0)
+   Serial.write(Serial12.read());
+}
+ 
   // read humidity
   float humi  = dht.readHumidity();
   // read temperature as Celsius
@@ -150,9 +174,9 @@ void loop() {
       while (1) {
         char SerialInByte;
         moistValue = analogRead(A0);
-        if (Serial1.available())
+        if (Serial12.available())
         {
-          SerialInByte = (unsigned char)Serial1.read();
+          SerialInByte = (unsigned char)Serial12.read();
           delay(5);
           if ( SerialInByte == 13 ) {
                        ProcessGprsMsg();
@@ -180,7 +204,6 @@ void loop() {
     }
     delay(1000);
   }
-
   if (key == '1') {
     moistureDETECT();
   }
@@ -192,9 +215,8 @@ void loop() {
     lcd.print("ENTER MOBILE NO.");
     lcd.setCursor(0, 1);
     lcd.print("                ");
-    saveNUM();
+               saveNUM();
   }
-
   if (key == '#') {
     lcd.clear();
     timerSET();
@@ -210,12 +232,11 @@ void loop() {
     lcd.print(value);
     delay(3000);
   }
-
   if (key == '*') {
     lcd.clear();
     for (int i = 1; i < 41; i++) {
-      Serial1.print( "AT+CMGD=" );
-      Serial1.println(i);
+      Serial12.print( "AT+CMGD=" );
+      Serial12.println(i);
 
       lcd.setCursor(0, 0);
       lcd.print(" DELETING SIM   ");
@@ -234,11 +255,7 @@ void loop() {
   lcd.print(" ");
   dht.read(DHTPIN);
   
-  ph_analog_val = analogRead(ph_analog);
-  Serial.print("PH Value - ");
-  Serial.println(ph_analog_val);
-  
-  DateTime now = RTC.now();
+  /*DateTime now = RTC.now();
   lcd.setCursor(0, 0);
   printDigits2(HOUR = now.hour());
   lcd.print(":");
@@ -252,32 +269,128 @@ void loop() {
   lcd.setCursor(11, 0);
   printDigits2(MONTH = now.month());
   lcd.print("-");
-  lcd.print(now.day(), DEC);
+  lcd.print(now.day(), DEC); */
+  
  /* lcd.setCursor(0, 1);
   lcd.print("Temperature:");  
   lcd.print(analogRead(DHTPIN)); 
   lcd.setCursor(17, 1);
   lcd.print((char)223);
   lcd.print("C"); */
-  lcd.setCursor(0, 2);
-  lcd.print("Moist:");
-   if (moistValue > 999)
+  lcd.setCursor(0, 0);
+  moistValue = map(analogRead(moistPin), 550,0,0,100);
+  if (analogRead(moistPin)>550 | analogRead(moistPin)<0)
   {
-   lcd.print("999");
+     lcd.print("Moist Val:");
+    lcd.print(abs(moistValue)); 
+   lcd.println("%");
   }
-  else 
+  else
   {
-   lcd.print(analogRead(moistPin));
+  lcd.print("Moist Val:");
+   lcd.print(moistValue);
+   lcd.println("%");
   }
-  delay(2000);
-   lcd.setCursor(9, 2);
-   lcd.print("                ");
-   delay(1000);
-   lcd.print("PH:");
-   lcd.print(analogRead(ph_analog));
-   delay(2000);
+ Serial12.println( "AT+CMGF=1" );
+  Serial12.println("Preparing to send SMS");
+  delay(200);
+
+for(int i=0; i<10; i++)
+{
+  buffer_arr[i]=analogRead(A1);
+  delay(30);
+}
+for(int i=0; i<9; i++)
+{
+  for(int j=i+1; j<10; j++)
+  {
+    if(buffer_arr[i]>buffer_arr[j])
+    {
+      temp=buffer_arr[i];
+      buffer_arr[i]=buffer_arr[j];
+      buffer_arr[j]=temp;
+    }
+  }
+}
+avgval=0;
+for(int i=2;i<8;i++)
+avgval+=buffer_arr[i];
+float volt=(float)avgval*5.0/1024/6;
+float ph_analog_val = -5.70 * volt + calibration_value;
+  
+  lcd.setCursor(0, 1);
+   lcd.print("PH Value: ");
+   lcd.println(abs(ph_analog_val));
+   SendMessage();
   matchTIM();
+}
 //#############################################################
+ void SendMessage()
+{
+  Serial12.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
+  delay(1000);  // Delay of 1000 milli seconds or 1 second
+  Serial12.println("AT+CMGS=\"+255783889987\"\r"); // Replace x with mobile number
+  delay(1000);
+  Serial12.print("Moisture Value - ");
+  moistValue = map(analogRead(moistPin), 550,0,0,100);
+  if (analogRead(moistPin)>550 | analogRead(moistPin)<0)
+  {
+    Serial12.print(abs(moistValue)); 
+   Serial12.println("%");
+  }
+  else
+  {
+   Serial12.print(moistValue);
+   Serial12.println("%");
+  }
+  for(int i=0; i<10; i++)
+{
+  buffer_arr[i]=analogRead(A1);
+  delay(30);
+}
+for(int i=0; i<9; i++)
+{
+  for(int j=i+1; j<10; j++)
+  {
+    if(buffer_arr[i]>buffer_arr[j])
+    {
+      temp=buffer_arr[i];
+      buffer_arr[i]=buffer_arr[j];
+      buffer_arr[j]=temp;
+    }
+  }
+}
+avgval=0;
+for(int i=2;i<8;i++)
+avgval+=buffer_arr[i];
+float volt=(float)avgval*5.0/1024/6;
+float ph_analog_val = -5.70 * volt + calibration_value;
+
+   Serial12.print("PH Value: ");
+   Serial12.print(abs(ph_analog_val));
+  delay(100);
+  Serial12.println((char)26);// ASCII code of CTRL+Z
+  delay(1000);
+
+  if (isnan(humi) || isnan(tempC)) {
+    Serial12.println("Failed to read from Sensors");
+  } else {
+    Serial12.print("Humidity: ");
+    Serial12.print(humi);
+    Serial12.println("%");
+
+    Serial12.print("Temperature: ");
+    Serial12.print(tempC);
+    Serial12.println("C");
+    Serial12.println("");
+}
+}
+ /*void RecieveMessage()
+{
+  Serial12.println("AT+CNMI=2,2,0,0,0"); // AT Command to recieve a live SMS
+  delay(1000);
+}
+*/
 void saveNUM() {
   while (1) {
     char key = keypad.getKey();
@@ -291,7 +404,7 @@ void saveNUM() {
       lcd.print(num[i]);
       count++;
       i++;
-      delay(500);
+      delay(10);
 
       if (key == '#' && count == 11) {
         for (int j = 0; j < 11; j++) {
@@ -300,16 +413,13 @@ void saveNUM() {
           EEPROM.write(j, num[j]);
           delay(500);
         }
-
-        lcd.setCursor(0, 0);
+        lcd.setCursor(0, 1);
         lcd.print("  NUMBER SAVED  ");
         lcd.setCursor(0, 1);
         lcd.print("***************");
         lcd.clear();
         pos = 1;
-
         break;
-
       }
     }
   }
@@ -449,20 +559,20 @@ void matchTIM() {
 void lowAlertSMS() {
 
   delay(100);
-  Serial1.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
+  Serial12.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
   delay(1000);  // Delay of 1000 milli seconds or 1 second
-  //mySerial.println("AT+CMGS="+255783889987"r"); // Replace x with mobile number
-  Serial1.print("AT+CMGS=\"+255745100699\"");
+  //Serial12.println("AT+CMGS="+255783889987"r"); // Replace x with mobile number
+  Serial12.print("AT+CMGS=\"+255745100699\"");
   for (int j = 0; j < 10; j++) {
     value = EEPROM.read(j);
-    Serial1.print(value);
+    Serial12.print(value);
     delay(3);
   }
-  Serial1.println("""r");
+  Serial12.println("""r");
   delay(1000);
-  Serial1.println("Alert !!! Low moisture level Detected");// The SMS text you want to send
+  Serial12.println("Alert !!! Low moisture level Detected");// The SMS text you want to send
   delay(100);
-  Serial1.println((char)26);// ASCII code of CTRL+Z
+  Serial12.println((char)26);// ASCII code of CTRL+Z
   delay(1000);
 }
 
@@ -470,22 +580,22 @@ void lowAlertSMS() {
 void moistureAlertSMS() {
   moistValue = analogRead(A0);
   delay(100);
-  Serial1.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
+  Serial12.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
   delay(1000);  // Delay of 1000 milli seconds or 1 second
-  //mySerial.println("AT+CMGS="+255783889987"r"); // Replace x with mobile number
-  Serial1.println("AT+CMGS=\"+255745100699\"");
+  //Serial12.println("AT+CMGS="+255783889987"r"); // Replace x with mobile number
+  Serial12.println("AT+CMGS=\"+255745100699\"");
   for (int j = 0; j < 10; j++) {
     value = EEPROM.read(j);
-    Serial1.print(value);
+    Serial12.print(value);
     delay(3);
   }
-  Serial1.println("""r");
+  Serial12.println("""r");
   delay(1000);
-  Serial1.print("Soil Moisture is:");// The SMS text you want to send
+  Serial12.print("Soil Moisture is:");// The SMS text you want to send
   delay(100);
-  Serial1.println(moistValue);// The SMS text you want to send
+  Serial12.println(moistValue);// The SMS text you want to send
   delay(100);
-  Serial1.println((char)26);// ASCII code of CTRL+Z
+  Serial12.println((char)26);// ASCII code of CTRL+Z
   delay(1000);
 }
 // ##################################################################################################################
@@ -511,14 +621,14 @@ void ProcessSms( String sms ) {
 // ###################################################################################################################
 void GprsReadSmsStore( String SmsStorePos ) {
 
-  Serial1.print( "AT+CMGR=" );
-  Serial1.println( SmsStorePos );
+  Serial12.print( "AT+CMGR=" );
+  Serial12.println( SmsStorePos );
 }
 // ################################################################################################################################
 void ProcessGprsMsg() {
 
   if ( msg.indexOf( "Call Ready" ) >= 0 ) {
-    Serial1.println( "AT+CMGF=1" );
+    Serial12.println( "AT+CMGF=1" );
   }
   if ( msg.indexOf( "+CMTI" ) >= 0 ) {
     Serial.println( "*** SMS Received ***" );

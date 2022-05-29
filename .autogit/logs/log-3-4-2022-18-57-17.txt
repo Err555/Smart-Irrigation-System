@@ -1,0 +1,15 @@
+-------------------- Auto-Git Log --------------------
+		Tue May 03 2022 18:57:17 GMT+0300 (East Africa Time)
+------------------------------------------------------
+
+Modified files:
+* _Add.Inn/Arduino/Smart_Irrigation_System_Phase_02/Smart_Irrigation_System_Phase_02.ino
+
+
+Created files:
+
+
+Deleted files:
+
+
+Renamed files:

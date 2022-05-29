@@ -1,11 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <WORKSPACE>
  <FRAME activewindow="0">
-<<<<<<< HEAD
   <PLACEMENT>2c0000000200000003000000ffffffffffffffffffffffffffffffff6400000009000000f2040000f7020000</PLACEMENT>
-=======
-  <PLACEMENT>2c00000002000000020000000083ffff0083ffffffffffffffffffff6400000009000000f2040000f7020000</PLACEMENT>
->>>>>>> VsCode_branch
   <WINDOW type="default" module="ISIS"/>
   <WINDOW type="default" module="ARES"/>
  </FRAME>
@@ -226,7 +222,7 @@
      <ITEM name="TopLineAddress">00000020</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="20" x="161" flags="00000001" y="108" h="3" pid="1" iid="15">
+   <POPUP w="20" x="148" flags="00000001" y="139" h="3" pid="1" iid="15">
     <PROPERTIES/>
    </POPUP>
    <POPUP w="8" x="518" flags="00000008" y="609" h="8" pid="2" iid="15">
@@ -315,13 +311,13 @@
      <ITEM name="TopLineAddress">00000000</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="450" x="916" flags="00000022" y="498" h="250" pid="0" iid="18">
+   <POPUP w="450" x="901" flags="00000022" y="389" h="250" pid="0" iid="11">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">0</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="450" x="916" flags="00000022" y="105" h="250" pid="0" iid="17">
+   <POPUP w="450" x="909" flags="00000022" y="128" h="250" pid="0" iid="17">
     <PROPERTIES>
      <ITEM name="AutoEcho">0</ITEM>
      <ITEM name="HexMode">0</ITEM>
